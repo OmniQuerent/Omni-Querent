@@ -1,137 +1,34 @@
-// server.js (Omni-Querent Hub Server with Voting + Admin Auth + MongoDB Atlas)
+steps:
+  # Step 1: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/omni-querent:latest', '.']
 
-import express from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-import bodyParser from "body-parser";
+  # Step 2: Push Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/omni-querent:latest']
 
-const app = express();
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'omni-querent',
+        '--image', 'gcr.io/$PROJECT_ID/omni-querent:latest',
+        '--platform', 'managed',
+        '--region', 'us-central1',
+        '--allow-unauthenticated',
+        '--project', '$PROJECT_ID',
+        '--set-env-vars',
+        'MONGO_URI=${_MONGO_URI},ADMIN_KEY=${_ADMIN_KEY},FRONTEND_URL=${_FRONTEND_URL}'
+      ]
 
-// ───────────────────────────────
-// CORS: Allow only frontend
-// ───────────────────────────────
-const allowedOrigin = process.env.FRONTEND_URL || "https://omni-querent.netlify.app";
-app.use(cors({ origin: allowedOrigin }));
+images:
+  - 'gcr.io/$PROJECT_ID/omni-querent:latest'
 
-app.use(bodyParser.json());
+substitutions:
+  _MONGO_URI: "mongodb://IRE:Eedrees16041604@ac-abc123-shard-00-00.xdzjly6.mongodb.net:27017,ac-abc123-shard-00-01.xdzjly6.mongodb.net:27017,ac-abc123-shard-00-02.xdzjly6.mongodb.net:27017/gravilionaire?ssl=true&replicaSet=atlas-xyz-shard-0&authSource=admin&retryWrites=true&w=majority"
+  _ADMIN_KEY: "OMOAOtOhFPeaBeiNpWzZ7oj1ps3O22yH"
+  _FRONTEND_URL: "https://omni-querent.netlify.app/"
 
-// ───────────────────────────────
-// MongoDB Connection
-// ───────────────────────────────
-const MONGO_URI = process.env.MONGO_URI;
-if (!MONGO_URI) {
-  console.error("❌ No MongoDB connection string found. Set MONGO_URI in environment.");
-  process.exit(1);
-}
-
-mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("✅ Connected to MongoDB Atlas"))
-  .catch((err) => {
-    console.error("❌ MongoDB connection failed:", err.message);
-    process.exit(1);
-  });
-
-// ───────────────────────────────
-// Mongoose Schema
-// ───────────────────────────────
-const voteSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  yes: { type: Number, default: 0 },
-  no: { type: Number, default: 0 },
-  totalVotes: { type: Number, default: 0 },
-  endsAt: Date,
-});
-
-const Vote = mongoose.model("Vote", voteSchema);
-
-// ───────────────────────────────
-// Middleware for Admin Authentication
-// ───────────────────────────────
-function adminAuth(req, res, next) {
-  const key = req.headers["x-admin-key"];
-  if (!key || key !== process.env.ADMIN_KEY) {
-    return res.status(403).json({ success: false, error: "Unauthorized" });
-  }
-  next();
-}
-
-// ───────────────────────────────
-// Voting Endpoints
-// ───────────────────────────────
-app.get("/api/votes", async (req, res) => {
-  try {
-    const now = new Date();
-    const votes = await Vote.find({ endsAt: { $gte: now } }).sort({ endsAt: 1 });
-    res.json(votes);
-  } catch (err) {
-    console.error("Error fetching votes:", err);
-    res.status(500).json({ error: "Failed to fetch votes" });
-  }
-});
-
-app.post("/api/votes/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { choice } = req.body;
-
-    if (!["yes", "no"].includes(choice)) {
-      return res.status(400).json({ success: false, error: "Invalid choice" });
-    }
-
-    const vote = await Vote.findById(id);
-    if (!vote) return res.status(404).json({ success: false, error: "Vote not found" });
-
-    if (new Date() > vote.endsAt) {
-      return res.status(400).json({ success: false, error: "Voting period has ended" });
-    }
-
-    if (choice === "yes") vote.yes += 1;
-    if (choice === "no") vote.no += 1;
-    vote.totalVotes += 1;
-
-    await vote.save();
-    res.json({ success: true, message: "Vote recorded", vote });
-  } catch (err) {
-    console.error("Error submitting vote:", err);
-    res.status(500).json({ success: false, error: "Failed to submit vote" });
-  }
-});
-
-// Admin-only endpoint
-app.post("/api/votes/create", adminAuth, async (req, res) => {
-  try {
-    const { title, description, durationHours } = req.body;
-    if (!title || !description || !durationHours) {
-      return res.status(400).json({ success: false, error: "Missing required fields" });
-    }
-
-    const endsAt = new Date();
-    endsAt.setHours(endsAt.getHours() + durationHours);
-
-    const newVote = new Vote({ title, description, endsAt });
-    await newVote.save();
-
-    res.json({ success: true, vote: newVote });
-  } catch (err) {
-    console.error("Error creating vote:", err);
-    res.status(500).json({ success: false, error: "Failed to create vote" });
-  }
-});
-
-// ───────────────────────────────
-// Root Health Check
-// ───────────────────────────────
-app.get("/", (req, res) => {
-  res.json({
-    message: "Omni-Querent API is running 🚀",
-    frontend: allowedOrigin,
-  });
-});
-
-// ───────────────────────────────
-// Start Server
-// ───────────────────────────────
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+options:
+  logging: CLOUD_LOGGING_ONLY
