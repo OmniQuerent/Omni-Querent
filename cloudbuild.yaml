@@ -26,3 +26,5 @@ images:
 substitutions:
   _MONGO_URI: "mongodb://localhost:27017/omniquerent"
   _ADMIN_KEY: "t6jpD9uZUB3snTZKFQAQySiztjCe8hkp"
+options:
+  logging: CLOUD_LOGGING_ONLY
