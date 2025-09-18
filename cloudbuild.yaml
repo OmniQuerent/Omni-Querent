@@ -1,13 +1,10 @@
 steps:
-  # Step 1: Build Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/omni-querent:latest', '.']
 
-  # Step 2: Push Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/omni-querent:latest']
 
-  # Step 3: Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -26,8 +23,8 @@ images:
   - 'gcr.io/$PROJECT_ID/omni-querent:latest'
 
 substitutions:
-  _MONGO_URI: "mongodb://IRE:Eedrees16041604@ac-abc123-shard-00-00.xdzjly6.mongodb.net:27017,ac-abc123-shard-00-01.xdzjly6.mongodb.net:27017,ac-abc123-shard-00-02.xdzjly6.mongodb.net:27017/gravilionaire?ssl=true&replicaSet=atlas-xyz-shard-0&authSource=admin&retryWrites=true&w=majority"
-  _ADMIN_KEY: "OMOAOtOhFPeaBeiNpWzZ7oj1ps3O22yH"
+  _MONGO_URI: "mongodb://..."
+  _ADMIN_KEY: "..."
   _FRONTEND_URL: "https://omni-querent.netlify.app/"
 
 options:
