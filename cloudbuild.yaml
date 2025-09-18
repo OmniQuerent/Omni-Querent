@@ -1,0 +1,28 @@
+steps:
+  # Step 1: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/omni-querent:latest', '.']
+
+  # Step 2: Push Docker image to registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/omni-querent:latest']
+
+  # (Optional) Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'omni-querent',
+        '--image', 'gcr.io/$PROJECT_ID/omni-querent:latest',
+        '--platform', 'managed',
+        '--region', 'us-central1',
+        '--allow-unauthenticated',
+        '--set-env-vars', 'MONGO_URI=${_MONGO_URI},ADMIN_KEY=${_ADMIN_KEY},PORT=5000'
+      ]
+
+images:
+  - 'gcr.io/$PROJECT_ID/omni-querent:latest'
+
+substitutions:
+  _MONGO_URI: "mongodb://localhost:27017/omniquerent"
+  _ADMIN_KEY: "t6jpD9uZUB3snTZKFQAQySiztjCe8hkp"
