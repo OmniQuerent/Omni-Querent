@@ -4,6 +4,10 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import bodyParser from "body-parser";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 
@@ -12,24 +16,29 @@ const app = express();
 // ───────────────────────────────
 const allowedOrigin = process.env.FRONTEND_URL || "https://omni-querent.netlify.app";
 app.use(cors({ origin: allowedOrigin }));
-
 app.use(bodyParser.json());
 
 // ───────────────────────────────
 // MongoDB Connection
 // ───────────────────────────────
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI =
+  process.env.MONGO_URI ||
+  "mongodb+srv://IRE:Eedrees16041604@cluster0.byzw1ti.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
 if (!MONGO_URI) {
   console.error("❌ No MongoDB connection string found. Set MONGO_URI in environment.");
   process.exit(1);
 }
 
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(MONGO_URI, {
+    // For Mongoose 7+, use unified options:
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch((err) => {
     console.error("❌ MongoDB connection failed:", err.message);
-    process.exit(1);
+    // Don’t exit immediately; log error for debugging
   });
 
 // ───────────────────────────────
@@ -130,4 +139,4 @@ app.get("/", (req, res) => {
 // Start Server
 // ───────────────────────────────
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
