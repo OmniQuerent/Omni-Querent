@@ -13,9 +13,6 @@ RUN npm install --production
 # Copy the rest of the application
 COPY . .
 
-# Expose port (Cloud Run will override with its own PORT)
-EXPOSE 8080
-
 # Use environment variables for production
 ENV NODE_ENV=production
 
