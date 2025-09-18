@@ -9,14 +9,14 @@ WORKDIR /usr/src/app
 # Copy package files first for better caching
 COPY package*.json ./
 
-# Install dependencies (only production)
+# Install dependencies (production only)
 RUN npm install --omit=dev
 
 # Copy application code
 COPY . .
 
-# Expose port (from server.js -> defaults to 5000)
-EXPOSE 5000
+# Cloud Run listens on 8080
+EXPOSE 8080
 
-# Run app
+# Start server
 CMD ["npm", "start"]
