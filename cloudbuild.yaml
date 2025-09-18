@@ -18,15 +18,17 @@ steps:
         '--region', 'us-central1',
         '--allow-unauthenticated',
         '--project', '$PROJECT_ID',
-        '--set-env-vars', 'MONGO_URI=${_MONGO_URI},ADMIN_KEY=${_ADMIN_KEY}'
+        '--set-env-vars',
+        'MONGO_URI=${_MONGO_URI},ADMIN_KEY=${_ADMIN_KEY},FRONTEND_URL=${_FRONTEND_URL}'
       ]
 
 images:
   - 'gcr.io/$PROJECT_ID/omni-querent:latest'
 
 substitutions:
-  _MONGO_URI: "MONGO_URI=mongodb://IRE:Eedrees16041604@ac-abc123-shard-00-00.xdzjly6.mongodb.net:27017,ac-abc123-shard-00-01.xdzjly6.mongodb.net:27017,ac-abc123-shard-00-02.xdzjly6.mongodb.net:27017/gravilionaire?ssl=true&replicaSet=atlas-xyz-shard-0&authSource=admin&retryWrites=true&w=majority"
-  _ADMIN_KEY: "OMOAOtOhFPeaBeiNpWzZ7oj1ps3O22yH"
+  _MONGO_URI: "mongodb://localhost:27017/omniquerent"
+  _ADMIN_KEY: "t6jpD9uZUB3snTZKFQAQySiztjCe8hkp"
+  _FRONTEND_URL: "https://omni-querent.netlify.app/"
 
 options:
   logging: CLOUD_LOGGING_ONLY
