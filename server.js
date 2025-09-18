@@ -1,8 +1,5 @@
 // server.js (Omni-Querent Hub Server with Voting + Admin Auth + MongoDB Atlas)
 
-import dotenv from "dotenv";
-dotenv.config();
-
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -11,10 +8,9 @@ import bodyParser from "body-parser";
 const app = express();
 
 // ───────────────────────────────
-// CORS: Allow only Netlify frontend
+// CORS: Allow only frontend
 // ───────────────────────────────
-const allowedOrigin =
-  process.env.FRONTEND_URL || "https://omni-querent.netlify.app";
+const allowedOrigin = process.env.FRONTEND_URL || "https://omni-querent.netlify.app";
 app.use(cors({ origin: allowedOrigin }));
 
 app.use(bodyParser.json());
@@ -23,21 +19,17 @@ app.use(bodyParser.json());
 // MongoDB Connection
 // ───────────────────────────────
 const MONGO_URI = process.env.MONGO_URI;
-
 if (!MONGO_URI) {
   console.error("❌ No MongoDB connection string found. Set MONGO_URI in environment.");
   process.exit(1);
 }
 
 mongoose
-  .connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch((err) => {
     console.error("❌ MongoDB connection failed:", err.message);
-    process.exit(1); // Exit if no DB is available
+    process.exit(1);
   });
 
 // ───────────────────────────────
@@ -68,14 +60,10 @@ function adminAuth(req, res, next) {
 // ───────────────────────────────
 // Voting Endpoints
 // ───────────────────────────────
-
-// Fetch all active votes
 app.get("/api/votes", async (req, res) => {
   try {
     const now = new Date();
-    const votes = await Vote.find({ endsAt: { $gte: now } }).sort({
-      endsAt: 1,
-    });
+    const votes = await Vote.find({ endsAt: { $gte: now } }).sort({ endsAt: 1 });
     res.json(votes);
   } catch (err) {
     console.error("Error fetching votes:", err);
@@ -83,7 +71,6 @@ app.get("/api/votes", async (req, res) => {
   }
 });
 
-// Submit a vote
 app.post("/api/votes/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -94,14 +81,10 @@ app.post("/api/votes/:id", async (req, res) => {
     }
 
     const vote = await Vote.findById(id);
-    if (!vote) {
-      return res.status(404).json({ success: false, error: "Vote not found" });
-    }
+    if (!vote) return res.status(404).json({ success: false, error: "Vote not found" });
 
     if (new Date() > vote.endsAt) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Voting period has ended" });
+      return res.status(400).json({ success: false, error: "Voting period has ended" });
     }
 
     if (choice === "yes") vote.yes += 1;
@@ -109,7 +92,6 @@ app.post("/api/votes/:id", async (req, res) => {
     vote.totalVotes += 1;
 
     await vote.save();
-
     res.json({ success: true, message: "Vote recorded", vote });
   } catch (err) {
     console.error("Error submitting vote:", err);
@@ -122,21 +104,15 @@ app.post("/api/votes/create", adminAuth, async (req, res) => {
   try {
     const { title, description, durationHours } = req.body;
     if (!title || !description || !durationHours) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Missing required fields" });
+      return res.status(400).json({ success: false, error: "Missing required fields" });
     }
 
     const endsAt = new Date();
     endsAt.setHours(endsAt.getHours() + durationHours);
 
-    const newVote = new Vote({
-      title,
-      description,
-      endsAt,
-    });
-
+    const newVote = new Vote({ title, description, endsAt });
     await newVote.save();
+
     res.json({ success: true, vote: newVote });
   } catch (err) {
     console.error("Error creating vote:", err);
@@ -157,6 +133,5 @@ app.get("/", (req, res) => {
 // ───────────────────────────────
 // Start Server
 // ───────────────────────────────
-const PORT = process.env.PORT || 8080; // Use Cloud Run port or fallback
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
