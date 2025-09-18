@@ -1,20 +1,23 @@
-# ── Base image ──
-FROM node:18-alpine
+# Use official Node.js LTS image
+FROM node:20-alpine AS base
 
-# ── Set working directory ──
+# Set working directory
 WORKDIR /usr/src/app
 
-# ── Copy package.json and package-lock.json ──
+# Copy package.json and package-lock.json first for caching
 COPY package*.json ./
 
-# ── Install dependencies ──
-RUN npm install --production
+# Install dependencies (only production dependencies)
+RUN npm ci --omit=dev
 
-# ── Copy the rest of the application ──
+# Copy application source code
 COPY . .
 
-# ── Expose Cloud Run port (must be 8080 internally) ──
-EXPOSE 8080
+# Expose the port (from .env or default 8081)
+EXPOSE 8081
 
-# ── Start server ──
+# Set NODE_ENV to production
+ENV NODE_ENV=production
+
+# Start the application
 CMD ["node", "server.js"]
