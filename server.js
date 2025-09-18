@@ -157,7 +157,6 @@ app.get("/", (req, res) => {
 // ───────────────────────────────
 // Start Server
 // ───────────────────────────────
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🌍 Hub Server running on http://localhost:${PORT}`)
-);
+const PORT = process.env.PORT || 8080; // Use Cloud Run port or fallback
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
