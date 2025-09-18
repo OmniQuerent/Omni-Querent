@@ -5,7 +5,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/omni-querent:latest']
 
-  # Step 1: clear env vars
+  # Single deploy step — replaces env vars automatically
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -16,9 +16,8 @@ steps:
         '--region', 'us-central1',
         '--allow-unauthenticated',
         '--project', '$PROJECT_ID',
-        '--clear-env-vars'
+        '--set-env-vars', 'MONGO_URI=${_MONGO_URI},ADMIN_KEY=${_ADMIN_KEY},FRONTEND_URL=${_FRONTEND_URL}'
       ]
-
 
 images:
   - 'gcr.io/$PROJECT_ID/omni-querent:latest'
