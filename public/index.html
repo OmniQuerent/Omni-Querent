@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omni-Querent - Cross-Chain Knowledge Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .chain-card {
+            transition: all 0.3s ease;
+        }
+        
+        .chain-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .ethereum-hover:hover {
+            box-shadow: 0 20px 40px rgba(98, 126, 234, 0.3);
+            border-color: #627eea;
+        }
+        
+        .polygon-hover:hover {
+            box-shadow: 0 20px 40px rgba(130, 71, 229, 0.3);
+            border-color: #8247e5;
+        }
+        
+        .bnb-hover:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #000000;
+        }
+        
+        .avalanche-hover:hover {
+            box-shadow: 0 20px 40px rgba(4, 32, 185, 0.3);
+            border-color: #0922c4;
+        }
+        
+        .leaderboard-item {
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .progress-bar {
+            animation: fillProgress 2s ease-out;
+        }
+        
+        @keyframes fillProgress {
+            from { width: 0%; }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <!-- Logo -->
+                    <div class="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
+                        <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreialrt3u4lpnmydm6x5dc6fefh6ry7dxyq5cq3g5usrl6dnvhw2g2a" alt="Omni-Querent" class="w-10 h-10 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">OMNI-QUERENT</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-gray-900 font-medium hover:text-blue-600 transition-colors">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Voting Board</a>
+                    <a href="https://omni-querent.gitbook.io/omni-querent-docs/" target="_blank" class="text-gray-600 hover:text-blue-600 transition-colors">Docs</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-blue-50 to-purple-50 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl font-bold text-gray-900 mb-6 floating">
+                Monetizing Knowledge Across Blockchains
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Play, Compete, Vote, and Earn across multiple chains with Omni-Querent
+            </p>
+        </div>
+    </section>
+
+    <!-- Blockchain Spots Grid -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Active Blockchain Networks</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Zero Gravity Card -->
+                <div class="chain-card ethereum-hover bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreicaf3kmsbifh4z3ymn2rbrlmwdmgvnr7ujvlo7fqotaydwl6ts6a" alt="Zero Gravity" class="w-8 h-8 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Zero Gravity</h3>
+                            <p class="text-sm text-gray-500">0G Network</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Top Players</h4>
+                        <div class="space-y-2" id="zg-leaderboard">
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm font-medium">0x7a2f...8b1c</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">2.4 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm font-medium">0x9c4d...2e7f</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">1.8 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm font-medium">0x1b8a...5d9e</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">1.2 QUIZ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="https://omni-querent-gravillion.netlify.app/">
+                        <button class="w-full bg-gray-800 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors">
+                            Join Now
+                        </button>
+                    </a>
+
+                </div>
+
+                <!-- Monad Card -->
+                <div class="chain-card polygon-hover bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreibtw2ub2qfysx6sv6kdqnhexxszycmzsxy6emyj3waydnldzkkeri" alt="Monad" class="w-8 h-8 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Monad</h3>
+                            <p class="text-sm text-gray-500">MONAD Network</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Top Players</h4>
+                        <div class="space-y-2" id="monad-leaderboard">
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm font-medium">0x3f5e...9a2b</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">850 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm font-medium">0x8d1c...4f7e</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">720 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm font-medium">0x6a9f...1c8d</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">650 QUIZ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="https://omni-querent-monallion.netlify.app/">
+                        <button class="w-full bg-purple-500 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors">
+                            join Now
+                        </button>
+                    </a>
+
+                </div>
+
+                <!-- Intuition Card -->
+                <div class="chain-card bnb-hover bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-black-100 rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreihvwgz3kocss733igz3gg6wk7cffkj2d3gjmqrki6aorvfwumvooe" alt="Intuition" class="w-8 h-8 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Intuition</h3>
+                            <p class="text-sm text-gray-500">INT Network</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Top Players</h4>
+                        <div class="space-y-2" id="intuition-leaderboard">
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm font-medium">0x2e8f...7b3a</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">12.5 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm font-medium">0x5c7d...9e4f</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">9.8 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm font-medium">0x4a1b...6d8c</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">7.2 QUIZ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="https://omni-querent-intuillion.netlify.app/">
+                        <button class="w-full bg-black hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors">
+                            Join Now
+                        </button>
+                    </a>
+
+                </div>
+
+                <!-- Pharos Card -->
+                <div class="chain-card avalanche-hover bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreiamzxbqfwx7wyu5peemu6waudwsr27up5xi43may4uylzeg2iqv5i" alt="Pharos" class="w-8 h-8 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Pharos</h3>
+                            <p class="text-sm text-gray-500">PHR Network</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Top Players</h4>
+                        <div class="space-y-2" id="pharos-leaderboard">
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm font-medium">0x9b2c...3f8e</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">45.2 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm font-medium">0x7f4a...1d6b</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">38.7 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm font-medium">0x3e9c...5a2f</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">32.1 QUIZ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-blue-500 hover:blue-600 text-white font-medium py-3 px-4 rounded-xl transition-colors">
+                        Join Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+        <!-- Blockchain Spots Grid -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Zero Gravity Card -->
+                <div class="chain-card ethereum-hover bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreicaf3kmsbifh4z3ymn2rbrlmwdmgvnr7ujvlo7fqotaydwl6ts6a" alt="Zero Gravity" class="w-8 h-8 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Zero Gravity</h3>
+                            <p class="text-sm text-gray-500">0G Network</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Top Players</h4>
+                        <div class="space-y-2" id="zg-leaderboard">
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm font-medium">0x7a2f...8b1c</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">2.4 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm font-medium">0x9c4d...2e7f</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">1.8 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm font-medium">0x1b8a...5d9e</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">1.2 QUIZ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="https://omni-querent-gravillion.netlify.app/">
+                        <button class="w-full bg-gray-800 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors">
+                            Join Now
+                        </button>
+                    </a>
+
+                </div>
+
+                <!-- Polygon Card -->
+                <div class="chain-card polygon-hover bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreigxwmobriue2fggqtorg35ykmlcnu5afgnqwispvy2dc5dndq4gbm" alt="Monad" class="w-8 h-8 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">POLYGON</h3>
+                            <p class="text-sm text-gray-500">Polygon Network</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Top Players</h4>
+                        <div class="space-y-2" id="polygon-leaderboard">
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm font-medium">0x3f5e...9a2b</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">850 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm font-medium">0x8d1c...4f7e</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">720 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm font-medium">0x6a9f...1c8d</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">650 QUIZ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="https://omni-querent-monallion.netlify.app/">
+                        <button class="w-full bg-purple-500 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors">
+                            join Now
+                        </button>
+                    </a>
+
+                </div>
+
+                <!-- LYX Card -->
+                <div class="chain-card bnb-hover bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-black-100 rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreifwobt7okr3fzgglvjaijtap2inrtuybm447bo6s4uywhbbmfdp7a" alt="Intuition" class="w-8 h-8 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">LYX LABS</h3>
+                            <p class="text-sm text-gray-500">LYX Network</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Top Players</h4>
+                        <div class="space-y-2" id="intuition-leaderboard">
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm font-medium">0x2e8f...7b3a</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">12.5 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm font-medium">0x5c7d...9e4f</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">9.8 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm font-medium">0x4a1b...6d8c</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">7.2 QUIZ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="https://omni-querent-intuillion.netlify.app/">
+                        <button class="w-full bg-black hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-xl transition-colors">
+                            Join Now
+                        </button>
+                    </a>
+
+                </div>
+
+                <!-- File Card -->
+                <div class="chain-card avalanche-hover bg-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center overflow-hidden">
+                            <img src="https://coral-enormous-scorpion-331.mypinata.cloud/ipfs/bafkreiei5nnqlb625rq64iswfzjpwbmuoy57otr6meyjpjmwlgdoxvmnpy" alt="filecoin" class="w-8 h-8 object-contain" onerror="this.src=''; this.alt='Logo failed to load'; this.style.display='none';">
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">Filecoin</h3>
+                            <p class="text-sm text-gray-500">File Stable</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Top Players</h4>
+                        <div class="space-y-2" id="pharos-leaderboard">
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm font-medium">0x9b2c...3f8e</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">45.2 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm font-medium">0x7f4a...1d6b</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">38.7 QUIZ</span>
+                            </div>
+                            <div class="leaderboard-item flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm font-medium">0x3e9c...5a2f</span>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">32.1 QUIZ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-blue-500 hover:blue-600 text-white font-medium py-3 px-4 rounded-xl transition-colors">
+                        Join Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Voting Board Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Community Voting</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Vote Card 1 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                    <h3 class="font-semibold text-gray-900 mb-3">Should we add Solana support?</h3>
+                    <div class="space-y-3 mb-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Yes, add Solana</span>
+                                <span class="font-medium">68%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar bg-green-500 h-2 rounded-full" style="width: 68%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>No, focus on current chains</span>
+                                <span class="font-medium">32%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar bg-red-500 h-2 rounded-full" style="width: 32%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm text-gray-500">Ends in 2d 14h</span>
+                        <span class="text-sm font-medium text-gray-700">1,247 votes</span>
+                    </div>
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Vote Now
+                    </button>
+                </div>
+
+                <!-- Vote Card 2 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                    <h3 class="font-semibold text-gray-900 mb-3">New trivia category: DeFi Protocols</h3>
+                    <div class="space-y-3 mb-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Great idea!</span>
+                                <span class="font-medium">82%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar bg-green-500 h-2 rounded-full" style="width: 82%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Not interested</span>
+                                <span class="font-medium">18%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar bg-red-500 h-2 rounded-full" style="width: 18%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm text-gray-500">Ends in 5d 8h</span>
+                        <span class="text-sm font-medium text-gray-700">892 votes</span>
+                    </div>
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Vote Now
+                    </button>
+                </div>
+
+                <!-- Vote Card 3 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                    <h3 class="font-semibold text-gray-900 mb-3">Weekly tournament prize pool</h3>
+                    <div class="space-y-3 mb-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Increase to 100 QUIZ</span>
+                                <span class="font-medium">45%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar bg-blue-500 h-2 rounded-full" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Keep at 50 QUIZ</span>
+                                <span class="font-medium">55%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar bg-purple-500 h-2 rounded-full" style="width: 55%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm text-gray-500">Ends in 1d 3h</span>
+                        <span class="text-sm font-medium text-gray-700">2,156 votes</span>
+                    </div>
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Vote Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-600 mb-4 md:mb-0">© 2025 Omni-Querent — Cross-Chain Knowledge Hub</p>
+                <div class="flex space-x-6">
+                    <a href="https://x.com/OmniQuerent" target="_blank" class="text-gray-400 hover:text-blue-500 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-indigo-500 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-gray-900 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Animate leaderboards
+        function animateLeaderboard(containerId, players) {
+            const container = document.getElementById(containerId);
+            let currentIndex = 0;
+            
+            setInterval(() => {
+                const items = container.querySelectorAll('.leaderboard-item');
+                items.forEach((item, index) => {
+                    const playerData = players[(currentIndex + index) % players.length];
+                    const walletSpan = item.querySelector('.text-sm.font-medium');
+                    const earningsSpan = item.querySelector('.text-sm.font-semibold');
+                    
+                    walletSpan.textContent = playerData.wallet;
+                    earningsSpan.textContent = playerData.earnings;
+                    
+                    item.style.animation = 'none';
+                    setTimeout(() => {
+                        item.style.animation = 'slideUp 0.5s ease-out';
+                    }, 10);
+                });
+                
+                currentIndex = (currentIndex + 1) % players.length;
+            }, 4000);
+        }
+
+        // Sample player data for each chain
+        const zgPlayers = [
+            { wallet: '0x7a2f...8b1c', earnings: '2.4 QUIZ' },
+            { wallet: '0x9c4d...2e7f', earnings: '1.8 QUIZ' },
+            { wallet: '0x1b8a...5d9e', earnings: '1.2 QUIZ' },
+            { wallet: '0x4f7e...3a9c', earnings: '0.9 QUIZ' },
+            { wallet: '0x8d2b...6f1a', earnings: '0.7 QUIZ' },
+            { wallet: '0x3c9f...4e8d', earnings: '0.5 QUIZ' }
+        ];
+
+        const monadPlayers = [
+            { wallet: '0x3f5e...9a2b', earnings: '850 QUIZ' },
+            { wallet: '0x8d1c...4f7e', earnings: '720 QUIZ' },
+            { wallet: '0x6a9f...1c8d', earnings: '650 QUIZ' },
+            { wallet: '0x2b7c...5e9a', earnings: '580 QUIZ' },
+            { wallet: '0x9f4a...8d3b', earnings: '520 QUIZ' },
+            { wallet: '0x1e6c...7f2a', earnings: '480 QUIZ' }
+        ];
+
+        const intuitionPlayers = [
+            { wallet: '0x2e8f...7b3a', earnings: '12.5 QUIZ' },
+            { wallet: '0x5c7d...9e4f', earnings: '9.8 QUIZ' },
+            { wallet: '0x4a1b...6d8c', earnings: '7.2 QUIZ' },
+            { wallet: '0x8f3e...2a9d', earnings: '6.1 QUIZ' },
+            { wallet: '0x7c2a...5f8b', earnings: '5.4 QUIZ' },
+            { wallet: '0x9d6f...1e4c', earnings: '4.8 QUIZ' }
+        ];
+
+        const pharosPlayers = [
+            { wallet: '0x9b2c...3f8e', earnings: '45.2 QUIZ' },
+            { wallet: '0x7f4a...1d6b', earnings: '38.7 QUIZ' },
+            { wallet: '0x3e9c...5a2f', earnings: '32.1 QUIZ' },
+            { wallet: '0x6d8f...9c4a', earnings: '28.5 QUIZ' },
+            { wallet: '0x1a7e...4b9f', earnings: '25.3 QUIZ' },
+            { wallet: '0x8c5d...2f7e', earnings: '22.8 QUIZ' }
+        ];
+
+        // Start animations
+        animateLeaderboard('zg-leaderboard', zgPlayers);
+        animateLeaderboard('monad-leaderboard', monadPlayers);
+        animateLeaderboard('intuition-leaderboard', intuitionPlayers);
+        animateLeaderboard('pharos-leaderboard', pharosPlayers);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'981074fa64c23771',t:'MTc1ODE5NDQ1Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
