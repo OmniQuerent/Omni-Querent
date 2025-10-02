@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Voting - Omni-Querent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Gradient background */
+        body {
+            background: linear-gradient(to bottom, #ffffff, #e0f2fe); /* white → sky blue */
+        }
+
+        .vote-card {
+            transition: all 0.3s ease;
+        }
+
+        .vote-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            animation: fillProgress 1.5s ease-out;
+        }
+
+        @keyframes fillProgress {
+            from { width: 0%; }
+        }
+
+        .vote-option {
+            transition: all 0.2s ease;
+        }
+
+        .vote-option:hover {
+            background-color: #f8fafc;
+            border-color: #3b82f6;
+        }
+
+        .vote-option.selected {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .countdown {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">OMNI-QUERENT</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/" class="text-gray-600 hover:text-blue-600 transition-colors">Home</a>
+                    <a href="/leaderboard" class="text-gray-600 hover:text-blue-600 transition-colors">Leaderboards</a>
+                    <a href="/voting" class="text-gray-900 font-medium hover:text-blue-600 transition-colors">Voting Board</a>
+                    <a href="/about" class="text-gray-600 hover:text-blue-600 transition-colors">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4 floating">
+                Community Voting Board
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                Shape the future of Omni-Querent by participating in community governance
+            </p>
+        </div>
+    </section>
+
+    <!-- Voting Categories -->
+    <section class="py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center flex-wrap gap-4 mb-8">
+            <button class="tab-button active px-6 py-3 rounded-full border border-gray-300 font-medium" onclick="filterVotes('all')">All Votes</button>
+            <button class="tab-button px-6 py-3 rounded-full border border-gray-300 font-medium" onclick="filterVotes('governance')">Governance</button>
+            <button class="tab-button px-6 py-3 rounded-full border border-gray-300 font-medium" onclick="filterVotes('features')">Features</button>
+            <button class="tab-button px-6 py-3 rounded-full border border-gray-300 font-medium" onclick="filterVotes('blockchain')">Blockchain</button>
+            <button class="tab-button px-6 py-3 rounded-full border border-gray-300 font-medium" onclick="filterVotes('rewards')">Rewards</button>
+        </div>
+    </section>
+
+    <!-- Active Votes Grid -->
+    <section class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="votes-container">
+                <!-- Sample vote card template -->
+                <div class="vote-card bg-white rounded-2xl p-6 shadow-lg border border-gray-100" data-category="blockchain">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-3 py-1 rounded-full">Blockchain</span>
+                        <span class="countdown text-sm text-red-500 font-medium">⏰ 2d 14h left</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-3 text-lg">Sample Voting Topic</h3>
+                    <p class="text-gray-600 text-sm mb-4">Description of the vote or proposal goes here...</p>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="vote-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer" onclick="selectOption(this, 'yes')">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium">✅ Yes</span>
+                                <span class="font-bold text-green-600">70%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar bg-green-500 h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">700 votes</div>
+                        </div>
+                        <div class="vote-option border-2 border-gray-200 rounded-lg p-3 cursor-pointer" onclick="selectOption(this, 'no')">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium">❌ No</span>
+                                <span class="font-bold text-red-600">30%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="progress-bar bg-red-500 h-2 rounded-full" style="width: 30%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">300 votes</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm text-gray-500">Total: 1,000 votes</span>
+                        <span class="text-sm font-medium text-gray-700">Min: 500 votes</span>
+                    </div>
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-colors" onclick="submitVote('vote-1')">Cast Your Vote</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        let selectedOptions = {};
+
+        function filterVotes(category) {
+            const cards = document.querySelectorAll('.vote-card');
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            cards.forEach(card => {
+                if(category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function selectOption(element, optionId) {
+            const siblings = element.parentNode.querySelectorAll('.vote-option');
+            siblings.forEach(sibling => sibling.classList.remove('selected'));
+            element.classList.add('selected');
+            const voteId = element.closest('.vote-card').querySelector('button').getAttribute('onclick').match(/'([^']+)'/)[1];
+            selectedOptions[voteId] = optionId;
+        }
+
+        function submitVote(voteId) {
+            if(!selectedOptions[voteId]) { alert('Please select an option before voting!'); return; }
+            alert(`Vote submitted: ${selectedOptions[voteId]}`);
+        }
+    </script>
+</body>
+</html>
