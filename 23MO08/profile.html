@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile - Monalionaire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.42.5/dist/umd/supabase.min.js"></script>
+  <style>
+    body { font-family:'Inter',sans-serif; background:linear-gradient(135deg,#0E100F,#200052); color:#FBFAF9; min-height:100vh; margin:0; }
+    .container{ max-width:1000px; margin:auto; padding:20px; }
+    .header{ display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid rgba(131,110,249,.3);}
+    .logo{ font-family:'Orbitron',monospace; font-size:24px; font-weight:700; color:#836EF9;}
+    .wallet-container{ position:relative; }
+    .connect-wallet-btn{ background:linear-gradient(45deg,#836EF9,#A0055D); color:white; border:none; padding:12px 24px; border-radius:50px; font-weight:600; cursor:pointer;}
+    .dropdown{ display:none; position:absolute; right:0; margin-top:10px; background:#200052; border:1px solid rgba(131,110,249,.4); border-radius:10px; width:180px; z-index:10;}
+    .dropdown a{ display:block; padding:10px 20px; color:#FBFAF9; text-decoration:none;}
+    .dropdown a:hover{ background:rgba(131,110,249,.2);}
+    .wallet-container.active .dropdown{ display:block; }
+    .profile-header{ text-align:center; padding:40px; border:2px solid rgba(131,110,249,.4); border-radius:20px; margin-top:20px;}
+    .profile-avatar{ width:120px; height:120px; border-radius:50%; margin:auto; background:radial-gradient(circle,#836EF9,#A0055D,#200052); display:flex; align-items:center; justify-content:center; font-size:3rem; overflow:hidden; cursor:pointer;}
+    .profile-avatar img{ width:100%; height:100%; object-fit:cover; }
+    .profile-name{ font-family:'Orbitron',monospace; font-size:1.8rem; font-weight:900; color:#836EF9; margin:15px 0; cursor:pointer;}
+    .wallet-info{ color:#ccc; font-size:0.9rem; margin-bottom:15px; word-break:break-all;}
+    .profile-rank{ display:inline-block; padding:8px 20px; border-radius:25px; background:rgba(131,110,249,.2); border:1px solid rgba(131,110,249,.4); color:#836EF9; font-weight:600;}
+    .stats-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:30px;}
+    .stat-card{ padding:20px; border:2px solid rgba(131,110,249,.3); border-radius:15px; text-align:center;}
+    .stat-value{ font-family:'Orbitron',monospace; font-size:1.5rem; color:#836EF9; margin-bottom:5px;}
+    .logout-btn{ margin-top:30px; padding:12px 30px; background:#200052; border:2px solid #A0055D; color:#fff; border-radius:20px; cursor:pointer;}
+    .warning-banner{ display:none; margin:20px auto 0; padding:15px 20px; border-radius:12px; border:1px solid rgba(255,85,85,.5); background:rgba(255,85,85,.15); color:#ffb4b4; font-weight:600; text-align:center; max-width:1000px;}
+    .warning-banner.active{ display:block; }
+    .modal{ display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.8); justify-content:center; align-items:center; z-index:100; }
+    .modal-content{ background:#0E100F; border:2px solid #836EF9; border-radius:20px; padding:30px; max-width:400px; width:90%; }
+    .modal-title{ font-family:'Orbitron',monospace; font-size:1.2rem; margin-bottom:15px; color:#836EF9;}
+    .form-group{ margin-bottom:15px;}
+    .form-group input{ width:100%; padding:10px; border:1px solid #836EF9; border-radius:10px; background:rgba(131,110,249,.1); color:#fff;}
+    .file-label{ display:block; padding:12px; border:1px dashed #836EF9; border-radius:10px; text-align:center; cursor:pointer; margin-bottom:15px;}
+    .modal-btn{ padding:10px 20px; border:none; border-radius:10px; font-weight:600; cursor:pointer;}
+    .save{ background:linear-gradient(45deg,#836EF9,#A0055D); color:white;}
+    .cancel{ background:rgba(160,5,93,.2); color:#A0055D;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">MONALIONAIRE</div>
+      <div class="wallet-container" id="walletContainer">
+        <button class="connect-wallet-btn" id="connectWalletBtn">Connect Wallet</button>
+        <div class="dropdown" id="walletDropdown">
+          <a href="/home.html">Home</a>
+          <a href="/leaderboard.html">Leaderboard</a>
+          <a href="#" id="disconnectBtn">Disconnect</a>
+        </div>
+      </div>
+    </header>
+    <div class="warning-banner" id="warningBanner" role="alert"></div>
+
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar"><span>👤</span></div>
+      <h1 class="profile-name" id="profileName">Player</h1>
+      <div class="wallet-info" id="walletInfo">Wallet: Not connected</div>
+      <div class="profile-rank" id="profileRank">🏆 Bronze Player</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-value" id="gamesPlayed">0</div><div>Games Played</div></div>
+      <div class="stat-card"><div class="stat-value" id="totalWinnings">0</div><div>Total Winnings</div></div>
+      <div class="stat-card"><div class="stat-value" id="millionStreaks">0</div><div>Million Streaks</div></div>
+      <div class="stat-card"><div class="stat-value" id="successRate">0%</div><div>Success Rate</div></div>
+    </div>
+
+    <button class="logout-btn" id="logoutBtn">Log Out</button>
+  </div>
+
+  <!-- Edit Name Modal -->
+  <div class="modal" id="nameModal">
+    <div class="modal-content">
+      <div class="modal-title">Edit Display Name</div>
+      <div class="form-group"><input type="text" id="displayName" maxlength="20"></div>
+      <button class="modal-btn cancel" onclick="closeModal('nameModal')">Cancel</button>
+      <button class="modal-btn save" id="saveNameBtn">Save</button>
+    </div>
+  </div>
+
+  <!-- Change Avatar Modal -->
+  <div class="modal" id="avatarModal">
+    <div class="modal-content">
+      <div class="modal-title">Change Avatar</div>
+      <input type="file" id="avatarUpload" accept="image/*" hidden>
+      <label for="avatarUpload" class="file-label">Choose image (max 100KB)</label>
+      <button class="modal-btn cancel" onclick="closeModal('avatarModal')">Close</button>
+    </div>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://tnoizbvhjhbmwckaejel.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRub2l6YnZoamhibXdja2FlamVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NDkyMTIsImV4cCI6MjA3NDAyNTIxMn0.rLrsogRwzR4S4DjjK0dM3PTLPOGcKwxRoMoDU_Y6zys";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let userAddress = localStorage.getItem("wallet") || null;
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const walletContainer = document.getElementById("walletContainer");
+  const btn = document.getElementById("connectWalletBtn");
+
+  if(userAddress){
+    updateWalletUI();
+    await loadProfileData();
+  } else {
+    resetProfileDisplay();
+    showWarning("Connect your wallet on the Home page to unlock your profile.");
+  }
+
+  btn.onclick = () => {
+    if(userAddress){ walletContainer.classList.toggle("active"); }
+    else { alert("Please connect wallet from Home page first!"); }
+  };
+
+  document.getElementById("disconnectBtn").onclick = disconnectWallet;
+  document.getElementById("logoutBtn").onclick = disconnectWallet;
+
+  document.getElementById("profileAvatar").onclick = ()=>{ document.getElementById("avatarModal").style.display="flex"; };
+  document.getElementById("profileName").onclick = ()=>{
+    document.getElementById("displayName").value = document.getElementById("profileName").textContent.trim();
+    document.getElementById("nameModal").style.display="flex";
+  };
+  document.getElementById("avatarUpload").onchange = uploadAvatarFile;
+  document.getElementById("saveNameBtn").onclick = saveName;
+});
+
+function updateWalletUI(){
+  clearWarning();
+  document.getElementById("walletInfo").textContent = "Wallet: " + userAddress;
+  document.getElementById("connectWalletBtn").textContent = userAddress.slice(0,6)+"..."+userAddress.slice(-4);
+}
+
+function disconnectWallet(){
+  localStorage.removeItem("wallet"); userAddress=null;
+  document.getElementById("walletInfo").textContent="Wallet: Not connected";
+  document.getElementById("connectWalletBtn").textContent="Connect Wallet";
+  resetProfileDisplay();
+  closeModals();
+  const walletContainer = document.getElementById("walletContainer");
+  if(walletContainer) walletContainer.classList.remove("active");
+  window.location.href = "/home.html";
+}
+
+function closeModal(id){
+  const modal = document.getElementById(id);
+  if(modal) modal.style.display = "none";
+}
+
+function showWarning(message){
+  const banner = document.getElementById("warningBanner");
+  if(!banner) return;
+  banner.textContent = message;
+  banner.classList.add("active");
+}
+
+function clearWarning(){
+  const banner = document.getElementById("warningBanner");
+  if(!banner) return;
+  banner.textContent = "";
+  banner.classList.remove("active");
+}
+
+function resetProfileDisplay(){
+  document.getElementById("profileName").textContent = "Player";
+  document.getElementById("profileAvatar").innerHTML = "<span>👤</span>";
+  document.getElementById("gamesPlayed").textContent = 0;
+  document.getElementById("totalWinnings").textContent = 0;
+  document.getElementById("millionStreaks").textContent = 0;
+  document.getElementById("successRate").textContent = "0%";
+  document.getElementById("profileRank").textContent = "🏆 Bronze Player";
+}
+
+function renderProfile(profile){
+  clearWarning();
+  const name = (profile.name || "").trim();
+  document.getElementById("profileName").textContent = name || "Player";
+
+  if(profile.avatar){
+    document.getElementById("profileAvatar").innerHTML = `<img src="${profile.avatar}" />`;
+  } else {
+    document.getElementById("profileAvatar").innerHTML = "<span>👤</span>";
+  }
+
+  const gamesPlayed = Number(profile.games_played ?? 0);
+  document.getElementById("gamesPlayed").textContent = Number.isFinite(gamesPlayed) ? gamesPlayed : 0;
+
+  const totalWinnings = Number(profile.total_winnings ?? 0);
+  document.getElementById("totalWinnings").textContent = Number.isFinite(totalWinnings) ? totalWinnings : 0;
+
+  const millionStreaks = Number(profile.million_streaks ?? 0);
+  document.getElementById("millionStreaks").textContent = Number.isFinite(millionStreaks) ? millionStreaks : 0;
+
+  const rawSuccessRate = Number(profile.success_rate ?? 0);
+  let normalizedSuccessRate = rawSuccessRate;
+  if(Number.isFinite(rawSuccessRate)){
+    normalizedSuccessRate = rawSuccessRate <= 1 ? rawSuccessRate * 100 : rawSuccessRate;
+  }
+  const displaySuccessRate = Number.isFinite(normalizedSuccessRate) ? normalizedSuccessRate : 0;
+  const formattedRate = Number.isInteger(displaySuccessRate) ? displaySuccessRate : displaySuccessRate.toFixed(1);
+  document.getElementById("successRate").textContent = `${formattedRate}%`;
+
+  document.getElementById("profileRank").textContent = profile.rank || "🏆 Bronze Player";
+}
+
+async function loadProfileData(){
+  const { data, error } = await supabase.from("profiles").select("*").eq("wallet", userAddress).single();
+  if(error || !data){
+    await supabase.from("profiles").insert({ wallet:userAddress });
+    return;
+  }
+  renderProfile(data);
+}
+
+function closeModals(){ document.querySelectorAll(".modal").forEach(m=>m.style.display="none"); }
+
+async function saveName(){
+  const newName = document.getElementById("displayName").value.trim();
+  if(!newName) return alert("Enter a valid name");
+  const { error } = await supabase.from("profiles").update({ name:newName }).eq("wallet", userAddress);
+  if(error){
+    console.error("Failed to update name", error);
+    alert("Something went wrong saving your name. Please try again.");
+    return;
+  }
+  document.getElementById("profileName").textContent=newName;
+  closeModal("nameModal");
+}
+
+async function uploadAvatarFile(e){
+  const file=e.target.files[0]; if(!file) return;
+  if(file.size>100*1024){ alert("File too large (max 100KB)"); return; }
+
+  const fileExt=file.name.split('.').pop();
+  const fileName=`${userAddress}_${Date.now()}.${fileExt}`;
+
+  const { error } = await supabase.storage.from("avatars").upload(fileName, file, { upsert:true });
+  if(error){ alert("Upload failed: "+error.message); return; }
+
+  const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+  const { error: profileError } = await supabase.from("profiles").update({ avatar:data.publicUrl }).eq("wallet", userAddress);
+  if(profileError){
+    console.error("Failed to update avatar url", profileError);
+    alert("We uploaded the file but could not save it to your profile. Try again.");
+    return;
+  }
+
+  document.getElementById("profileAvatar").innerHTML=`<img src="${data.publicUrl}" />`;
+  closeModal("avatarModal");
+}
+</script>
+</body>
+</html>
